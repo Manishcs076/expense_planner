@@ -34,9 +34,28 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   final List<Transcation> _userTransactions = [];
   bool _showChart = false;
+
+  //Adding Listner (init State)
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print(state);
+  }
+
+  @override
+  dispose() {
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
   List<Transcation> get _recentTransactions {
     return _userTransactions.where((tx) {
       return tx.date.isAfter(
@@ -63,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _startAddNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
       context: ctx,
-      builder: (_) {
+      builder: (context) {
         return GestureDetector(
           onTap: () {},
           child: NewTransaction(_addNewTransaction),
@@ -155,6 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print('build() MyHomePageState');
     final mediaQuery = MediaQuery.of(context);
     final isLandscape = mediaQuery.orientation == Orientation.landscape;
     final PreferredSizeWidget appBar = _buildAppBar();
